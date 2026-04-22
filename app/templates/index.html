@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pneumonia Detection System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #0f172a, #1e3a8a, #0f766e);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            color: white;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            padding: 30px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #dbeafe;
+        }
+
+        input[type="file"] {
+            margin-top: 15px;
+            padding: 8px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+            transform: scale(1.05);
+        }
+
+        /* Image preview */
+        .preview {
+            margin-top: 20px;
+        }
+
+        .preview img {
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+
+        /* Result box */
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.08);
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9);}
+            to { opacity: 1; transform: scale(1);}
+        }
+
+        .normal {
+            color: #4ade80;
+        }
+
+        .pneumonia {
+            color: #f87171;
+        }
+
+        .info-text {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Pneumonia Detection</h1>
+    <p>Upload a chest X-ray image and get a prediction using deep learning.</p>
+
+    <!-- Upload form -->
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" accept="image/*" required>
+        <br>
+        <button type="submit">Predict</button>
+    </form>
+
+    <!-- Image preview before submit -->
+    <div class="preview">
+        <img id="previewImage" src="" style="display:none;">
+    </div>
+
+    <!-- Result section -->
+    {% if prediction %}
+        <div class="result-box">
+
+            <h2>
+                Prediction:
+                <span class="{{ 'normal' if prediction == 'NORMAL' else 'pneumonia' }}">
+                    {{ prediction }}
+                </span>
+            </h2>
+
+            <!-- Extra explanation -->
+            {% if prediction == "NORMAL" %}
+                <p class="info-text">
+                    The model did not detect signs of pneumonia in this X-ray image.
+                </p>
+            {% elif prediction == "PNEUMONIA" %}
+                <p class="info-text">
+                    The model detected patterns that may indicate pneumonia.
+                    Please consult a medical professional for confirmation.
+                </p>
+            {% endif %}
+
+        </div>
+    {% endif %}
+
+</div>
+
+<!-- JavaScript for image preview -->
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const previewImage = document.getElementById('previewImage');
+
+    fileInput.addEventListener('change', function () {
+        const file = this.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewImage.style.display = "block";
+            }
+
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+
+</body>
+</html>
